@@ -1,19 +1,18 @@
-import duckdb
+import pandas as pd
 import requests
+from datetime import datetime
 
-DB_FILE = "nerd_facts.duckdb"
+PARQUET_FILE = "staging_data/swapi_people.parquet"
 
 def fetch_data():
     url = "https://swapi.dev/api/people/"
     response = requests.get(url)
     data = response.json()["results"]
-    return [(person["name"], person["height"], person["mass"], person["hair_color"]) for person in data]
+    return [(person["name"], person["height"], person["mass"], person["hair_color"], datetime.utcnow()) for person in data]
 
 def store_data():
-    db = duckdb.connect(DB_FILE)
-    db.execute("CREATE TABLE IF NOT EXISTS swapi_people (name TEXT, height INTEGER, mass INTEGER, hair_color TEXT)")
-    db.executemany("INSERT INTO swapi_people VALUES (?, ?, ?, ?)", fetch_data())
-    db.close()
+    df = pd.DataFrame(fetch_data(), columns=["name", "height", "mass", "hair_color", "created_at"])
+    df.to_parquet(PARQUET_FILE, index=False)
 
 if __name__ == "__main__":
     store_data()
