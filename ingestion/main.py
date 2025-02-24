@@ -1,19 +1,21 @@
-import pandas as pd
 import requests
-from datetime import datetime
+import pandas as pd
 
-PARQUET_FILE = "staging_data/swapi_people.parquet"
+urls = {
+    "films": "https://swapi.dev/api/films/",
+    "characters": "https://swapi.dev/api/people/",
+    "pokemon": "https://pokeapi.co/api/v2/pokemon?limit=10",
+}
 
-def fetch_data():
-    url = "https://swapi.dev/api/people/"
+def fetch_data(url):
     response = requests.get(url)
-    data = response.json()["results"]
-    return [(person["name"], person["height"], person["mass"], person["hair_color"], datetime.utcnow()) for person in data]
+    if response.status_code == 200:
+        return response.json()
+    return None
 
-def store_data():
-    df = pd.DataFrame(fetch_data(), columns=["name", "height", "mass", "hair_color", "created_at"])
-    df.to_parquet(PARQUET_FILE, index=False)
-
-if __name__ == "__main__":
-    store_data()
-    print("✅ Data Ingestion Complete!")
+for name, url in urls.items():
+    data = fetch_data(url)
+    if data:
+        df = pd.DataFrame(data["results"] if "results" in data else data)
+        df.to_csv(f"seeds/{name}.csv", index=False)
+        print(f"Saved {name}.csv")

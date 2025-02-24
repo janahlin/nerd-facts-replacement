@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: people
+        external:
+          location: "data/raw/people.csv"
+      - name: planets
+        external:
+          location: "data/raw/planets.csv"
+      - name: films
+        external:
+          location: "data/raw/films.csv"
+      - name: species
+        external:
+          location: "data/raw/species.csv"
+      - name: vehicles
+        external:
+          location: "data/raw/vehicles.csv"
+      - name: starships
+        external:
+          location: "data/raw/starships.csv"
