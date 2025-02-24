@@ -1,18 +1,15 @@
-name: "nerd_facts"
+name: nerd_facts_project
+version: '1.0'
+config-version: 2
 
-profile: "duckdb"
+profile: nerd_facts_profile
 
-model-paths: ["models"]
-analysis-paths: ["analyses"]
-test-paths: ["tests"]
-macro-paths: ["macros"]
-snapshot-paths: ["snapshots"]
-seed-paths: ["seeds"] 
-
-clean-targets:         
+source-paths: ["models"]
+target-path: "target"
+clean-targets:
   - "target"
-  - "dbt_packages"  
+  - "dbt_modules"
 
-models:
-  nerd_facts:
-    +schema: raw
+seeds:
+  nerd_facts_project:
+    +schema: seeds

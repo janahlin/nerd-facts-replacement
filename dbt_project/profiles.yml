@@ -1,0 +1,8 @@
+nerd_facts_profile:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb   # Ändra till postgres vid behov
+      path: "data/nerd_facts.duckdb"
+      threads: 1
+      database: "nerd_facts"

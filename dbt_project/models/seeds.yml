@@ -2,62 +2,20 @@ version: 2
 
 seeds:
   - name: films
-    description: "Star Wars films dataset seeded from films.csv"
-    columns:
-      - name: url
-        description: "API URL for the film"
-      - name: title
-        description: "Title of the film"
-      - name: episode_id
-        description: "Star Wars episode number"
-      - name: director
-        description: "Director of the film"
-      - name: producer
-        description: "Producer(s) of the film"
-      - name: release_date
-        description: "Release date of the film"
-        tests:
-          - not_null
-      - name: created
-        description: "Time when the film entry was created"
-      - name: edited
-        description: "Time when the film entry was last edited"
-
-  - name: planets
-    description: "Star Wars planets dataset from planets.csv"
-    columns:
-      - name: planet_id
-        description: "Unique identifier for each planet"
-      - name: name
-        description: "Planet name"
-      - name: climate
-        description: "Climate of the planet"
-      - name: gravity
-        description: "Gravity conditions"
-      - name: terrain
-        description: "Planet terrain"
-      - name: population
-        description: "Population of the planet"
-        tests:
-          - not_null
-
+    config:
+      file: seeds/films.csv
   - name: people
-    description: "Star Wars characters dataset from people.csv"
-    columns:
-      - name: person_id
-        description: "Unique identifier for each character"
-      - name: name
-        description: "Character name"
-      - name: height
-        description: "Height in cm"
-      - name: mass
-        description: "Mass in kg"
-      - name: hair_color
-        description: "Hair color"
-      - name: skin_color
-        description: "Skin color"
-      - name: eye_color
-        description: "Eye color"
-      - name: birth_year
-        description: "Birth year"
-
+    config:
+      file: seeds/people.csv
+  - name: planets
+    config:
+      file: seeds/planets.csv
+  - name: species
+    config:
+      file: seeds/species.csv
+  - name: starships
+    config:
+      file: seeds/starships.csv
+  - name: vehicles
+    config:
+      file: seeds/vehicles.csv

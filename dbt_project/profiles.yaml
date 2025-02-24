@@ -1,6 +1,0 @@
-default:
-  outputs:
-    dev:
-      type: duckdb
-      path: "data/warehouse.duckdb"
-  target: dev

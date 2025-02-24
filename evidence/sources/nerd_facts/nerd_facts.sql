@@ -1,1 +1,2 @@
-SELECT * FROM swapi_people LIMIT 10;
+-- En enkel SQL-fil för att testa anslutning
+select * from nerd_facts;

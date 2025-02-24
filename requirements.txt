@@ -1,5 +1,4 @@
-duckdb
-dbt-duckdb
 requests
 pandas
-pyarrow
+dbt-core
+dbt-duckdb  # Eller dbt-postgres beroende på databasval

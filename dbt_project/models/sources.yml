@@ -1,24 +1,12 @@
 version: 2
 
 sources:
-  - name: raw
-    schema: main
+  - name: nerd_facts_raw
+    schema: main_seeds
     tables:
-      - name: people
-        external:
-          location: "data/raw/people.csv"
-      - name: planets
-        external:
-          location: "data/raw/planets.csv"
       - name: films
-        external:
-          location: "data/raw/films.csv"
+      - name: people
+      - name: planets
       - name: species
-        external:
-          location: "data/raw/species.csv"
-      - name: vehicles
-        external:
-          location: "data/raw/vehicles.csv"
       - name: starships
-        external:
-          location: "data/raw/starships.csv"
+      - name: vehicles
