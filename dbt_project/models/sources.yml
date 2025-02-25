@@ -9,4 +9,4 @@ sources:
       - name: planets
       - name: species
       - name: starships
-      - name: vehicles
+      - name: vehicles      

@@ -14,8 +14,7 @@ select
     hair_colors,
     eye_colors,
     average_lifespan,    
-    language,    
-    films,
+    language,        
     CAST(created AS TIMESTAMP) AS created_at,
     CAST(edited AS TIMESTAMP) AS updated_at,
     url

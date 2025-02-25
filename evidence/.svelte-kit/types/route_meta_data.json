@@ -1,21 +1,7 @@
 {
 	"/": [],
-	"/api/table/films": [
-		"src/routes/api/table/films/+server.js"
+	"/api/table/[tablename]": [
+		"src/routes/api/table/[tablename]/+server.js"
 	],
-	"/api/table/people": [
-		"src/routes/api/table/people/+server.js"
-	],
-	"/api/table/planets": [
-		"src/routes/api/table/planets/+server.js"
-	],
-	"/api/table/species": [
-		"src/routes/api/table/species/+server.js"
-	],
-	"/api/table/starships": [
-		"src/routes/api/table/starships/+server.js"
-	],
-	"/api/table/vehicles": [
-		"src/routes/api/table/vehicles/+server.js"
-	]
+	"/films": []
 }

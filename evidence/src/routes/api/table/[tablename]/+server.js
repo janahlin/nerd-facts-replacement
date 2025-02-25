@@ -6,10 +6,29 @@ import duckdb from 'duckdb';
  * Exempel: /api/table/films
  */
 export async function GET({ params }) {
+  const schema = 'main';
   const { tablename } = params;
-
+  
   // Lista med tillåtna tabeller (för säkerhet)
-  const allowedTables = ['films', 'people', 'planets', 'species', 'starships', 'vehicles'];
+  const allowedTables = [
+    'films', 
+    'people', 
+    'planets', 
+    'species', 
+    'starships', 
+    'vehicles',
+    'film_characters',
+    'film_planets',
+    'film_species',
+    'film_starships',
+    'film_vehicles',
+    'people_planets',
+    'people_species',
+    'people_starships',
+    'people_vehicles',
+    'species_planets',
+  ];  
+
   if (!allowedTables.includes(tablename)) {
     return new Response(JSON.stringify({ error: 'Invalid table name' }), { status: 400 });
   }
@@ -18,10 +37,12 @@ export async function GET({ params }) {
   const dbPath = './../dbt_project/data/nerd_facts.duckdb';
 
   // Skapa en anslutning
-  const db = new duckdb.Database(dbPath);
+  const db = new duckdb.Database(dbPath, {
+    access_mode: "READ_ONLY"
+} );
 
   // Bygg SQL-frågan – observera att du bör sanera indata ordentligt
-  const sql = `SELECT * FROM ${tablename}`;
+  const sql = `SELECT * FROM ${schema}.${tablename}`;
 
   // Returnera resultatet som JSON
   return new Promise((resolve, reject) => {

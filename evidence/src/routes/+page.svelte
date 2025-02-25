@@ -4,7 +4,24 @@
   import { writable } from 'svelte/store';
 
   // Lista med tabellval
-  const tables = ['films', 'people', 'planets', 'species', 'starships', 'vehicles'];
+  const tables = [
+    'films', 
+    'people', 
+    'planets', 
+    'species', 
+    'starships', 
+    'vehicles',
+    'film_characters',
+    'film_planets',
+    'film_species',
+    'film_starships',
+    'film_vehicles',
+    'people_planets',
+    'people_species',
+    'people_starships',
+    'people_vehicles',
+    'species_planets',
+  ];
   let selectedTable = tables[0]; // förvalt val
 
   const data = writable([]);
@@ -12,9 +29,9 @@
 
   async function fetchTableData() {
     error.set(null);
-    try {
+    try {      
       const res = await fetch(`/api/table/${selectedTable}`);
-      if (!res.ok) {
+      if (!res.ok) {        
         throw new Error(`Fel vid hämtning: ${res.status}`);
       }
       const json = await res.json();

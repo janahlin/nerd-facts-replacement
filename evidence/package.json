@@ -11,6 +11,7 @@
   "author": "Ditt Namn",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^4.4.8",
     "duckdb": "^1.2.0",
     "svelte": "^3.59.2"
   },
