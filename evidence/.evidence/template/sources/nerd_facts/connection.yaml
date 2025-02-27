@@ -1,4 +1,0 @@
-name: nerd_facts
-type: duckdb
-options:
-  filename: "../../../nerd_facts.duckdb"

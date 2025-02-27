@@ -1,7 +1,0 @@
-{
-	"/": [],
-	"/api/table/[tablename]": [
-		"src/routes/api/table/[tablename]/+server.js"
-	],
-	"/films": []
-}
