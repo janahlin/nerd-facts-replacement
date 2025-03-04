@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: nerd_facts_raw
-    schema: main_seeds
+    schema: staging
     tables:
       - name: films
       - name: people

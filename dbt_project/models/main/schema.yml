@@ -1,0 +1,152 @@
+version: 2
+
+models:
+  - name: dim_films
+    description: "Film details from Star Wars"
+    columns:
+      - name: film_id
+        description: "Unique ID for the film"
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: "Title of the film"
+      - name: episode_id
+        description: "Episode number"
+      - name: director
+        description: "Director of the film"
+      - name: producer
+        description: "Producers of the film"
+      - name: release_date
+        description: "Film release date"
+        tests:
+          - not_null
+      - name: opening_crawl
+        description: "Opening crawl text"
+
+  - name: dim_people
+    description: "Characters from Star Wars"
+    columns:
+      - name: character_id
+        description: "Unique ID for the character"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Character name"
+      - name: gender
+        description: "Character gender"
+      - name: skin_color
+        description: "Character skin color"
+      - name: hair_color
+        description: "Character hair color"
+      - name: eye_color
+        description: "Character eye color"
+      - name: height_cm
+        description: "Height in cm"
+      - name: weight_kg
+        description: "Weight in kg"
+      - name: birth_year
+        description: "Year of birth"
+      - name: homeworld_id
+        description: "Reference to the home planet"
+        tests:
+          - relationships:
+              to: ref('dim_planets')
+              field: planet_id
+
+  - name: dim_planets
+    description: "Planets in the Star Wars universe"
+    columns:
+      - name: planet_id
+        description: "Unique ID for the planet"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Planet name"
+      - name: diameter_km
+        description: "Diameter of the planet in km"
+      - name: climate
+        description: "Climate of the planet"
+      - name: terrain
+        description: "Terrain type"
+      - name: population
+        description: "Planet population"
+      - name: gravity
+        description: "Gravity description"
+
+  - name: dim_starships
+    description: "Starships from Star Wars"
+    columns:
+      - name: starship_id
+        description: "Unique ID for the starship"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Starship name"
+      - name: model
+        description: "Model of the starship"
+      - name: manufacturer
+        description: "Manufacturer of the starship"
+      - name: length_m
+        description: "Length in meters"
+      - name: crew_size
+        description: "Number of crew members"
+      - name: passenger_capacity
+        description: "Passenger capacity"
+      - name: starship_class
+        description: "Class of the starship"
+      - name: hyperdrive_rating
+        description: "Hyperdrive rating"
+
+  - name: dim_vehicles
+    description: "Vehicles from Star Wars"
+    columns:
+      - name: vehicle_id
+        description: "Unique ID for the vehicle"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Vehicle name"
+      - name: model
+        description: "Model of the vehicle"
+      - name: manufacturer
+        description: "Manufacturer of the vehicle"
+      - name: length_m
+        description: "Length in meters"
+      - name: crew_size
+        description: "Number of crew members"
+      - name: passenger_capacity
+        description: "Passenger capacity"
+      - name: vehicle_class
+        description: "Class of the vehicle"
+
+  - name: dim_species
+    description: "Species from Star Wars"
+    columns:
+      - name: species_id
+        description: "Unique ID for the species"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Species name"
+      - name: classification
+        description: "Biological classification"
+      - name: designation
+        description: "Sentient or non-sentient"
+      - name: avg_height_cm
+        description: "Average height in cm"
+      - name: avg_lifespan
+        description: "Average lifespan in years"
+      - name: hair_colors
+        description: "Hair color variations"
+      - name: skin_colors
+        description: "Skin color variations"
+      - name: eye_colors
+        description: "Eye color variations"
+      - name: language
+        description: "Primary language spoken"

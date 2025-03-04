@@ -4,12 +4,33 @@ config-version: 2
 
 profile: nerd_facts_profile
 
-source-paths: ["models"]
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
 target-path: "target"
 clean-targets:
   - "target"
   - "dbt_modules"
+  - "logs"
 
-seeds:
+models:
   nerd_facts_project:
-    +schema: seeds
+    # Default schema for all models (fallback)
+    +schema: main
+    +database: nerd_facts
+    +materialized: table
+
+    # raw:
+    #   +schema: raw
+    #   +materialized: view   # Raw tables should not be transformed
+
+    main:
+      +schema: main
+      +materialized: table
+
+      junction:
+        +schema: main
+        +materialized: table  # Junction tables are fact-like

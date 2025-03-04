@@ -1,8 +1,8 @@
 nerd_facts_profile:
-  target: dev
   outputs:
     dev:
-      type: duckdb   # Ändra till postgres vid behov
-      path: "data/nerd_facts.duckdb"
-      threads: 1
-      database: "nerd_facts"
+      type: duckdb
+      path: "/home/janne/nerd-facts-replacement/dbt_project/data/nerd_facts.duckdb"  # Use absolute path
+      schema: main  # Default schema for dimensions and junctions
+      threads: 4  # Adjust based on system capacity
+  target: dev
