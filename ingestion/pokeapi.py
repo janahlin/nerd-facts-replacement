@@ -8,7 +8,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ✅ Database Config
 BASE_DIR = os.getcwd()
-DB_PATH = os.path.join(BASE_DIR, '../data/nerd_facts.duckdb')
+DB_PATH = os.path.join(BASE_DIR, 'dbt_project/data/nerd_facts.duckdb')
+
 SCHEMA = 'raw'
 
 # ✅ Ensure DuckDB Directory Exists
@@ -54,17 +55,16 @@ def fetch_pokemon_detail(pokemon_id):
     if not data:
         return None
 
-    return {
+    record = {
         "id": data["id"],
         "name": data["name"],
         "height": data["height"],
         "weight": data["weight"],
-        "base_experience": data["base_experience"],
         "types": ", ".join([t["type"]["name"] for t in data["types"]]),
-        "abilities": ", ".join([a["ability"]["name"] for a in data["abilities"]]),
-        "stats": json.dumps({s["stat"]["name"]: s["base_stat"] for s in data["stats"]}),
-        "sprite_url": data["sprites"]["front_default"]
     }
+
+    print(f"✅ Fetched Pokémon {pokemon_id}: {record}")  # <-- Added print
+    return record
 
 # ✅ Fetch Pokémon Species Data
 def fetch_pokemon_species(pokemon_id):
@@ -91,6 +91,8 @@ def load_to_duckdb(df, table_name, schema=SCHEMA, db_path=DB_PATH):
     if df.empty:
         print(f"⚠️ Warning: No data for {table_name}, skipping.")
         return
+    
+    print(f"✅ Inserting {len(df)} records into {schema}.{table_name}. Sample data:\n{df.head()}")  # <-- Added print    
 
     con = duckdb.connect(db_path)
 

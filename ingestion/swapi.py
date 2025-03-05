@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ✅ Set up database path
 BASE_DIR = os.getcwd()
-DB_PATH = os.path.join(BASE_DIR, '../data/nerd_facts.duckdb')
+DB_PATH = os.path.join(BASE_DIR, 'dbt_project/data/nerd_facts.duckdb')
 SCHEMA = 'raw'
 
 # ✅ Ensure directory for DuckDB
