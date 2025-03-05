@@ -1,4 +1,8 @@
-name: nerd_facts
+# This file was automatically generated
 type: duckdb
+name: nerd_facts
 options:
   filename: nerd_facts.duckdb
+# Advanced Options, you probably don't want to change this
+buildOptions:
+  batchSize: 1000000

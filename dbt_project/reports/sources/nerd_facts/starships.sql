@@ -1,1 +1,1 @@
-select * from starships
+SELECT * FROM main.dim_starships;

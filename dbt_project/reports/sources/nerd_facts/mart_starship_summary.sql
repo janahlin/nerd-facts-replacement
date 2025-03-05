@@ -1,0 +1,1 @@
+SELECT * FROM main.mart_starship_summary;

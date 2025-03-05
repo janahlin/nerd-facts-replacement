@@ -1,1 +1,1 @@
-select * from people
+SELECT * FROM main.dim_people;

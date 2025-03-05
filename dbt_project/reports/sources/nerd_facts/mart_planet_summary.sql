@@ -1,0 +1,1 @@
+SELECT * FROM main.mart_planet_summary;

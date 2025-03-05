@@ -1,1 +1,2 @@
-select * from films
+SELECT * FROM main.dim_films;
+

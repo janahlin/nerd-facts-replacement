@@ -1,1 +1,1 @@
-select * from species
+SELECT * FROM main.dim_planets;

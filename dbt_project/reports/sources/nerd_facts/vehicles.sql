@@ -1,1 +1,1 @@
-select * from vehicles
+SELECT * FROM main.dim_vehicles;

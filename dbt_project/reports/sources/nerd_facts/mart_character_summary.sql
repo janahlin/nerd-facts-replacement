@@ -1,0 +1,1 @@
+SELECT * FROM main.mart_character_summary;
