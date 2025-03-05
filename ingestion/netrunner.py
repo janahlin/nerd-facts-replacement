@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Database Config
 BASE_DIR = os.getcwd()
-DB_PATH = os.path.join(BASE_DIR, '/dbt_project/data/nerd_facts.duckdb')
+DB_PATH = os.path.join(BASE_DIR, 'dbt_project/data/nerd_facts.duckdb')
 SCHEMA = 'raw'
 
 # Ensure DuckDB Directory Exists
@@ -50,11 +50,13 @@ def fetch_and_flatten(endpoint, entity_name):
 def load_to_duckdb(df, table_name, schema=SCHEMA, db_path=DB_PATH):
     ensure_db_directory(db_path)
 
+    print(f"🔍 DEBUG: Attempting to write to DuckDB at {os.path.abspath(db_path)}")  # <-- Print DB path
+
     if df.empty:
         print(f"⚠️ Warning: No data for {table_name}, skipping.")
         return
 
-    print(f"✅ Inserting {len(df)} records into {schema}.{table_name}. Sample data:\n{df.head()}")  # <-- Added print
+    # print(f"✅ Inserting {len(df)} records into {schema}.{table_name}. Sample data:\n{df.head()}")  # <-- Added print
 
     con = duckdb.connect(db_path)
 
