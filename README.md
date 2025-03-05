@@ -27,55 +27,54 @@ This repository ingests data from various APIs (SWAPI, Netrunner, Pokémon) and 
 2. Install required packages:
    ```bash
    pip install -r requirements.txt
-
-DuckDB Setup
-Ensure that DuckDB is installed. You can install it via pip:
-
+   
+### ETL Environment
+1. DuckDB Setup
+   Ensure that DuckDB is installed. You can install it via pip:
    ```bash
    pip install duckdb
 
-Or follow the instructions for your platform.
 
-dbt Setup
-Install dbt for DuckDB:
+   Or follow the instructions for your platform.
 
+2. dbt Setup
+   Install dbt for DuckDB:
    ```bash
    pip install dbt-duckdb
 
-Running the Project
-Data Ingestion
-Run the main ingestion script to load API data:
+3. Running the Project
+    Data Ingestion
+    Run the main ingestion script to load API data:
+    ```bash
+    python ingestion/main.py
 
-   ```bash
-   python ingestion/main.py
+    This will execute ingestion for SWAPI, Netrunner, and Pokémon APIs.
 
-This will execute ingestion for SWAPI, Netrunner, and Pokémon APIs.
-
-dbt Transformations
-Seeding/Raw Data:
-You can seed the CSV files (if using dbt seeds) or rely on the raw CSV files in the data/raw folder.
-
+4. dbt Transformations
+   Seeding/Raw Data:
+   You can seed the CSV files (if using dbt seeds) or rely on the raw CSV files in the data/raw folder.
    ```bash
    dbt seed
 
-Transformations:
-Run the dbt models to transform and load the data. The dimension models target the swapi schema in your DuckDB database:
-```bash
-dbt run
+5. Transformations:
+   Run the dbt models to transform and load the data. The dimension models target the swapi schema in your DuckDB database:
+   ```bash
+   dbt run
 
-Configuration
+### Configuration
+1. Configuration
 
-Verify your DuckDB connection in your dbt profile (typically located at ~/.dbt/profiles.yml).
-Adjust project-level configurations in dbt_project.yml, if needed.
-Ensure CSV files in data/raw reflect the expected structure for the staging models located in dbt_project/models/staging.
+   Verify your DuckDB connection in your dbt profile (typically located at ~/.dbt/profiles.yml).
+   Adjust project-level configurations in dbt_project.yml, if needed.
+   Ensure CSV files in data/raw reflect the expected structure for the staging models located in dbt_project/models/staging.
 
-Troubleshooting
+2. Troubleshooting
 
-If errors occur during ingestion (e.g., KeyError), verify that API responses or CSV formats match the expected structure.
-For dbt issues, review the specific model (staging or dimension) that is failing, and check that all configuration settings (such as schema names) are correct.
+   If errors occur during ingestion (e.g., KeyError), verify that API responses or CSV formats match the expected structure.
+   For dbt issues, review the specific model (staging or dimension) that is failing, and check that all configuration settings (such as schema names) are correct.
 
-Contributing
-Contributions are welcome! Please open issues or pull requests with improvements or bug fixes.
+### Contributing
+    Contributions are welcome! Please open issues or pull requests with improvements or bug fixes.
 
-License
-[Include your license information here] ```
+### License
+This project is licensed under the MIT License. See the LICENSE file for details. ```
