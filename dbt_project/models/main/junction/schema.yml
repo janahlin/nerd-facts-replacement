@@ -1,183 +1,64 @@
 version: 2
 
 models:
-  - name: films_characters
+  # ✅ SWAPI Junctions (Star Wars API)
+  - name: swapi_junction_films_characters
     description: "Many-to-many relationship between films and characters"
     columns:
       - name: film_id
-        description: "Foreign key to dim_films"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_films')
+              to: ref('swapi_dim_films')
               field: film_id
       - name: character_id
-        description: "Foreign key to dim_people"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_people')
+              to: ref('swapi_dim_people')
               field: character_id
 
-  - name: films_planets
-    description: "Many-to-many relationship between films and planets"
-    columns:
-      - name: film_id
-        description: "Foreign key to dim_films"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_films')
-              field: film_id
-      - name: planet_id
-        description: "Foreign key to dim_planets"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_planets')
-              field: planet_id
-
-  - name: films_starships
-    description: "Many-to-many relationship between films and starships"
-    columns:
-      - name: film_id
-        description: "Foreign key to dim_films"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_films')
-              field: film_id
-      - name: starship_id
-        description: "Foreign key to dim_starships"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_starships')
-              field: starship_id
-
-  - name: films_vehicles
-    description: "Many-to-many relationship between films and vehicles"
-    columns:
-      - name: film_id
-        description: "Foreign key to dim_films"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_films')
-              field: film_id
-      - name: vehicle_id
-        description: "Foreign key to dim_vehicles"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_vehicles')
-              field: vehicle_id
-
-  - name: films_species
-    description: "Many-to-many relationship between films and species"
-    columns:
-      - name: film_id
-        description: "Foreign key to dim_films"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_films')
-              field: film_id
-      - name: species_id
-        description: "Foreign key to dim_species"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_species')
-              field: species_id
-
-  - name: people_planets
-    description: "One-to-many relationship between people and their homeworlds"
-    columns:
-      - name: character_id
-        description: "Foreign key to dim_people"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_people')
-              field: character_id
-      - name: planet_id
-        description: "Foreign key to dim_planets"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_planets')
-              field: planet_id
-
-  - name: species_people
+  - name: swapi_junction_species_people
     description: "Many-to-many relationship between species and people"
     columns:
       - name: species_id
-        description: "Foreign key to dim_species"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_species')
+              to: ref('swapi_dim_species')
               field: species_id
       - name: character_id
-        description: "Foreign key to dim_people"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_people')
+              to: ref('swapi_dim_people')
               field: character_id
 
-  - name: species_planets
-    description: "One-to-many relationship between species and their homeworlds"
+  # ✅ PokéAPI Junctions
+  - name: pokemon_junction_types
+    description: "Junction table for Pokémon and their types"
     columns:
-      - name: species_id
-        description: "Foreign key to dim_species"
+      - name: pokemon_id
         tests:
-          - not_null
           - relationships:
-              to: ref('dim_species')
-              field: species_id
-      - name: planet_id
-        description: "Foreign key to dim_planets"
+              to: ref('pokemon_dim_pokemon')
+              field: pokemon_id
+      - name: type_id
         tests:
-          - not_null:
-              where: "planet_id IS NOT NULL"
           - relationships:
-              to: ref('dim_planets')
-              field: planet_id
+              to: ref('pokemon_dim_types')
+              field: type_id
 
-  - name: starships_people
-    description: "Many-to-many relationship between starships and people (pilots)"
+  - name: pokemon_junction_moves
+    description: "Junction table for Pokémon and their moves"
     columns:
-      - name: starship_id
-        description: "Foreign key to dim_starships"
+      - name: pokemon_id
         tests:
-          - not_null
           - relationships:
-              to: ref('dim_starships')
-              field: starship_id
-      - name: character_id
-        description: "Foreign key to dim_people"
+              to: ref('pokemon_dim_pokemon')
+              field: pokemon_id
+      - name: move_id
         tests:
-          - not_null
           - relationships:
-              to: ref('dim_people')
-              field: character_id
-
-  - name: vehicles_people
-    description: "Many-to-many relationship between vehicles and people (drivers)"
-    columns:
-      - name: vehicle_id
-        description: "Foreign key to dim_vehicles"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_vehicles')
-              field: vehicle_id
-      - name: character_id
-        description: "Foreign key to dim_people"
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_people')
-              field: character_id
+              to: ref('pokemon_dim_moves')
+              field: move_id

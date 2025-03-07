@@ -3,23 +3,22 @@ import duckdb
 import requests
 import pandas as pd
 import time
-import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# ✅ Database Config
+# Database Config
 BASE_DIR = os.getcwd()
 DB_PATH = os.path.join(BASE_DIR, 'dbt_project/data/nerd_facts.duckdb')
-
 SCHEMA = 'raw'
+TABLE_PREFIX = 'pokemon_'
 
-# ✅ Ensure DuckDB Directory Exists
+# Ensure DuckDB Directory Exists
 def ensure_db_directory(db_path):
     directory = os.path.dirname(db_path)
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
         print(f"Created directory: {directory}")
 
-# ✅ Fetch Data from PokeAPI with Retries
+# Fetch Data from PokéAPI with Retries
 def fetch_data(url, retries=5, timeout=30):
     for attempt in range(retries):
         try:
@@ -33,120 +32,84 @@ def fetch_data(url, retries=5, timeout=30):
         except requests.exceptions.RequestException as e:
             print(f"❌ Error fetching {url}: {e}")
             break
-    return None  
+    return None
 
-# ✅ Fetch All Pokémon IDs
-def fetch_all_pokemon_ids(limit=100):
-    url = f"https://pokeapi.co/api/v2/pokemon?limit={limit}"
-    print(f"Fetching Pokémon list from {url}...")
+# Fetch All Resources from an Endpoint with Pagination
+def fetch_all_resources(endpoint):
+    url = f"https://pokeapi.co/api/v2/{endpoint}/?limit=100"
+    resources = []
+    while url:
+        data = fetch_data(url)
+        if not data or "results" not in data:
+            print(f"⚠️ Warning: No data returned from {url}!")
+            break
+        resources.extend(data["results"])
+        url = data.get("next")
+    return resources
 
-    data = fetch_data(url)
-    if not data or "results" not in data:
-        print("⚠️ Warning: No Pokémon data returned from API!")
-        return []
+# Fetch Detailed Data for a Resource
+def fetch_resource_detail(url):
+    return fetch_data(url)
 
-    return [entry["url"].split("/")[-2] for entry in data["results"]]
-
-# ✅ Fetch Pokémon Details
-def fetch_pokemon_detail(pokemon_id):
-    url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
-    data = fetch_data(url)
-
-    if not data:
-        return None
-
-    record = {
-        "id": data["id"],
-        "name": data["name"],
-        "height": data["height"],
-        "weight": data["weight"],
-        "types": ", ".join([t["type"]["name"] for t in data["types"]]),
-    }
-
-    print(f"✅ Fetched Pokémon {pokemon_id}: {record}")  # <-- Added print
-    return record
-
-# ✅ Fetch Pokémon Species Data
-def fetch_pokemon_species(pokemon_id):
-    url = f"https://pokeapi.co/api/v2/pokemon-species/{pokemon_id}"
-    data = fetch_data(url)
-
-    if not data:
-        return None
-
-    return {
-        "id": data["id"],
-        "name": data["name"],
-        "color": data["color"]["name"],
-        "habitat": data["habitat"]["name"] if data["habitat"] else None,
-        "shape": data["shape"]["name"] if data["shape"] else None,
-        "base_happiness": data["base_happiness"],
-        "capture_rate": data["capture_rate"]
-    }
-
-# ✅ Load Data into DuckDB
+# Load Data into DuckDB
 def load_to_duckdb(df, table_name, schema=SCHEMA, db_path=DB_PATH):
     ensure_db_directory(db_path)
-
     if df.empty:
         print(f"⚠️ Warning: No data for {table_name}, skipping.")
         return
-    
-    print(f"✅ Inserting {len(df)} records into {schema}.{table_name}. Sample data:\n{df.head()}")  # <-- Added print    
-
     con = duckdb.connect(db_path)
-
     con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
     con.execute(f"DROP TABLE IF EXISTS {schema}.{table_name}")
     con.execute(f"CREATE TABLE {schema}.{table_name} AS SELECT * FROM df")
-
     con.close()
     print(f"✅ Loaded {len(df)} records into {schema}.{table_name}.")
 
-# ✅ Main Function to Ingest Pokémon Data
-def ingest_pokeapi(limit=100):
-    print("🚀 Fetching Pokémon Data...")
+# Main Function to Ingest Data from Specified Endpoints
+def ingest_pokeapi(endpoints):
+    print("🚀 Fetching Data from PokéAPI...")
 
-    # ✅ Step 1: Fetch Pokémon IDs
-    pokemon_ids = fetch_all_pokemon_ids(limit=limit)
-    if not pokemon_ids:
-        print("⚠️ No Pokémon IDs retrieved, stopping.")
-        return
+    for endpoint in endpoints:
+        print(f"Fetching data for endpoint: {endpoint}...")
+        resources = fetch_all_resources(endpoint)
+        if not resources:
+            print(f"⚠️ No resources found for {endpoint}, skipping.")
+            continue
 
-    # ✅ Step 2: Fetch Pokémon Details (Parallel Processing)
-    print("Fetching Pokémon Details...")
-    pokemon_data = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_pokemon = {executor.submit(fetch_pokemon_detail, pid): pid for pid in pokemon_ids}
-        for future in as_completed(future_to_pokemon):
-            try:
-                result = future.result()
-                if result:
-                    pokemon_data.append(result)
-            except Exception as e:
-                print(f"❌ Error processing Pokémon ID {future_to_pokemon[future]}: {e}")
+        # Fetch detailed data for each resource (Parallel Processing)
+        print(f"Fetching detailed data for {len(resources)} {endpoint} entries...")
+        detailed_data = []
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_url = {executor.submit(fetch_resource_detail, res['url']): res['url'] for res in resources}
+            for future in as_completed(future_to_url):
+                try:
+                    result = future.result()
+                    if result:
+                        detailed_data.append(result)
+                except Exception as e:
+                    print(f"❌ Error processing URL {future_to_url[future]}: {e}")
 
-    # ✅ Step 3: Store Pokémon Details in DuckDB
-    if pokemon_data:
-        df_pokemon = pd.DataFrame(pokemon_data)
-        load_to_duckdb(df_pokemon, "pokemon")
+        # Flatten nested structures if necessary
+        if detailed_data:
+            df = pd.json_normalize(detailed_data)
+            table_name = f"{TABLE_PREFIX}{endpoint.replace('-', '_')}"
+            load_to_duckdb(df, table_name)
+        else:
+            print(f"⚠️ No detailed data retrieved for {endpoint}.")
 
-    # ✅ Step 4: Fetch Pokémon Species (Parallel Processing)
-    print("Fetching Pokémon Species...")
-    species_data = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_species = {executor.submit(fetch_pokemon_species, pid): pid for pid in pokemon_ids}
-        for future in as_completed(future_to_species):
-            try:
-                result = future.result()
-                if result:
-                    species_data.append(result)
-            except Exception as e:
-                print(f"❌ Error processing Pokémon Species ID {future_to_species[future]}: {e}")
+    print("✅ Data ingestion from PokéAPI completed.")
 
-    # ✅ Step 5: Store Pokémon Species in DuckDB
-    if species_data:
-        df_species = pd.DataFrame(species_data)
-        load_to_duckdb(df_species, "pokemon_species")
+# List of endpoints to ingest
+endpoints = [
+    "berry", "berry-firmness", "berry-flavor", "contest-type", "contest-effect",
+    "super-contest-effect", "encounter-method", "encounter-condition", "encounter-condition-value",
+    "evolution-chain", "evolution-trigger", "generation", "pokedex", "version", "version-group",
+    "item", "item-attribute", "item-category", "item-fling-effect", "item-pocket", "machine",
+    "move", "move-ailment", "move-battle-style", "move-category", "move-damage-class",
+    "move-learn-method", "move-target", "location", "location-area", "pal-park-area", "region",
+    "ability", "characteristic", "egg-group", "gender", "growth-rate", "nature", "pokeathlon-stat",
+    "pokemon", "pokemon-color", "pokemon-form", "pokemon-habitat", "pokemon-shape", "pokemon-species",
+    "stat", "type", "language"
+]
 
-    print("✅ Pokémon Data successfully loaded into DuckDB.")
+# Run the ingestion process
+ingest_pokeapi(endpoints)

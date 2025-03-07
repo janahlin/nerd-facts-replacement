@@ -57,7 +57,7 @@ This repository ingests data from various APIs (SWAPI, Netrunner, Pokémon) and 
    dbt seed
 
 5. Transformations:
-   Run the dbt models to transform and load the data. The dimension models target the swapi schema in your DuckDB database:
+   Run the dbt models to transform and load the data. The dimension models target the main schema in your DuckDB database:
    ```bash
    dbt run
 

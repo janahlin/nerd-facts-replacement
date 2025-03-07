@@ -2,165 +2,182 @@ version: 2
 
 sources:
   - name: raw
-    description: "Raw Star Wars data from API"
+    description: "Raw data from APIs (SWAPI, NetrunnerDB, PokéAPI)"
     schema: raw
+
+    # ✅ SWAPI TABLES (Already present)
     tables:
       - name: films
         description: "Raw data for films from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the film"
             tests:
               - unique
               - not_null
-          - name: title
-            description: "Title of the film"
-          - name: episode_id
-            description: "Episode number"
-          - name: director
-            description: "Director of the film"
-          - name: producer
-            description: "Producers of the film"
-          - name: release_date
-            description: "Release date of the film"
-          - name: opening_crawl
-            description: "Opening crawl text"
-          - name: characters
-            description: "List of character UIDs in the film"
-          - name: planets
-            description: "List of planet UIDs in the film"
-          - name: starships
-            description: "List of starship UIDs in the film"
-          - name: vehicles
-            description: "List of vehicle UIDs in the film"
-          - name: species
-            description: "List of species UIDs in the film"
-
       - name: people
         description: "Raw data for people (characters) from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the character"
             tests:
               - unique
               - not_null
-          - name: name
-            description: "Character name"
-          - name: gender
-            description: "Character gender"
-          - name: skin_color
-            description: "Character skin color"
-          - name: hair_color
-            description: "Character hair color"
-          - name: eye_color
-            description: "Character eye color"
-          - name: height
-            description: "Character height in cm"
-          - name: mass
-            description: "Character weight in kg"
-          - name: birth_year
-            description: "Year of birth"
-          - name: homeworld
-            description: "UID of the character's home planet"
-
       - name: planets
         description: "Raw data for planets from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the planet"
             tests:
               - unique
               - not_null
-          - name: name
-            description: "Planet name"
-          - name: diameter
-            description: "Diameter of the planet in km"
-          - name: climate
-            description: "Climate of the planet"
-          - name: terrain
-            description: "Terrain type"
-          - name: population
-            description: "Population of the planet"
-          - name: gravity
-            description: "Gravity level"
-
       - name: starships
         description: "Raw data for starships from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the starship"
             tests:
               - unique
               - not_null
-          - name: name
-            description: "Starship name"
-          - name: model
-            description: "Model of the starship"
-          - name: manufacturer
-            description: "Manufacturer of the starship"
-          - name: length
-            description: "Length of the starship in meters"
-          - name: crew
-            description: "Crew capacity"
-          - name: passengers
-            description: "Passenger capacity"
-          - name: starship_class
-            description: "Class of the starship"
-          - name: hyperdrive_rating
-            description: "Hyperdrive rating"
-          - name: pilots
-            description: "List of character UIDs who piloted this starship"
-
       - name: vehicles
         description: "Raw data for vehicles from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the vehicle"
             tests:
               - unique
               - not_null
-          - name: name
-            description: "Vehicle name"
-          - name: model
-            description: "Model of the vehicle"
-          - name: manufacturer
-            description: "Manufacturer of the vehicle"
-          - name: length
-            description: "Length of the vehicle in meters"
-          - name: crew
-            description: "Crew capacity"
-          - name: passengers
-            description: "Passenger capacity"
-          - name: vehicle_class
-            description: "Class of the vehicle"
-          - name: pilots
-            description: "List of character UIDs who piloted this vehicle"
-
       - name: species
         description: "Raw data for species from SWAPI"
         columns:
           - name: uid
-            description: "Unique ID for the species"
+            tests:
+              - unique
+              - not_null
+
+    # ✅ NETRUNNERDB TABLES
+      - name: netrunner_cards
+        description: "Raw data for Netrunner cards"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_cycles
+        description: "Raw data for Netrunner cycles"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_factions
+        description: "Raw data for Netrunner factions"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_packs
+        description: "Raw data for Netrunner packs"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_sides
+        description: "Raw data for Netrunner sides"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_types
+        description: "Raw data for Netrunner card types"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_prebuilts
+        description: "Raw data for Netrunner prebuilt decks"
+        columns:
+          - name: code
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_reviews
+        description: "Raw data for Netrunner card reviews"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+      - name: netrunner_rulings
+        description: "Raw data for Netrunner card rulings"
+        columns:
+          - name: title
+            tests:
+              - not_null
+
+    # ✅ POKÉAPI TABLES (Newly added)
+      - name: pokemon_pokemon
+        description: "Raw data for Pokémon details"
+        columns:
+          - name: id
             tests:
               - unique
               - not_null
           - name: name
-            description: "Species name"
-          - name: classification
-            description: "Biological classification"
-          - name: designation
-            description: "Sentient or non-sentient"
-          - name: average_height
-            description: "Average height in cm"
-          - name: average_lifespan
-            description: "Average lifespan in years"
-          - name: hair_colors
-            description: "Hair color variations"
-          - name: skin_colors
-            description: "Skin color variations"
-          - name: eye_colors
-            description: "Eye color variations"
-          - name: language
-            description: "Primary language spoken"
-          - name: homeworld
-            description: "UID of the species' home planet"
+          - name: height
+          - name: weight
+          - name: types
+          - name: base_experience
+
+      - name: pokemon_pokemon_species
+        description: "Raw data for Pokémon species"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: name
+          - name: color
+          - name: habitat
+          - name: shape
+          - name: base_happiness
+          - name: capture_rate
+
+      - name: pokemon_ability
+        description: "Raw data for Pokémon abilities"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: name
+          - name: is_main_series
+
+      - name: pokemon_move
+        description: "Raw data for Pokémon moves"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: name
+          - name: power
+          - name: accuracy
+          - name: pp
+          - name: priority
+          - name: damage_class
+          - name: type
+
+      - name: pokemon_type
+        description: "Raw data for Pokémon types"
+        columns:
+          - name: id
+            tests:
+              - unique
+              - not_null
+          - name: name
+
+      - name: pokemon_evolution_chain
+        description: "Raw Pokémon evolution chain data"    
+
+      - name: pokemon_stat
+        description: "Raw Pokémon stat data"               
