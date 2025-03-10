@@ -18,7 +18,7 @@ def ensure_db_directory(db_path):
         os.makedirs(directory, exist_ok=True)
         print(f"Created directory: {directory}")
 
-# Fetch Data from PokéAPI with Retries
+# Fetch Data with Retries
 def fetch_data(url, retries=5, timeout=30):
     for attempt in range(retries):
         try:
@@ -34,14 +34,14 @@ def fetch_data(url, retries=5, timeout=30):
             break
     return None
 
-# Fetch All Resources from an Endpoint with Pagination
-def fetch_all_resources(endpoint):
-    url = f"https://pokeapi.co/api/v2/{endpoint}/?limit=100"
+# Fetch All Resources with Pagination
+def fetch_all_resources(endpoint, limit):
+    url = f"https://pokeapi.co/api/v2/{endpoint}/?limit={limit}"
     resources = []
     while url:
         data = fetch_data(url)
         if not data or "results" not in data:
-            print(f"⚠️ Warning: No data returned from {url}!")
+            print(f"⚠️ Warning: No data from {url}!")
             break
         resources.extend(data["results"])
         url = data.get("next")
@@ -51,11 +51,28 @@ def fetch_all_resources(endpoint):
 def fetch_resource_detail(url):
     return fetch_data(url)
 
+# Flatten JSON Structure
+def flatten_json(nested_json, parent_key='', sep='_'):
+    flattened = {}
+    for key, value in nested_json.items():
+        new_key = f"{parent_key}{sep}{key}" if parent_key else key
+        if isinstance(value, dict):
+            flattened.update(flatten_json(value, new_key, sep))
+        elif isinstance(value, list):
+            for i, item in enumerate(value):
+                if isinstance(item, dict):
+                    flattened.update(flatten_json(item, f"{new_key}_{i}", sep))
+                else:
+                    flattened[f"{new_key}_{i}"] = item
+        else:
+            flattened[new_key] = value
+    return flattened
+
 # Load Data into DuckDB
 def load_to_duckdb(df, table_name, schema=SCHEMA, db_path=DB_PATH):
     ensure_db_directory(db_path)
     if df.empty:
-        print(f"⚠️ Warning: No data for {table_name}, skipping.")
+        print(f"⚠️ No data for {table_name}, skipping.")
         return
     con = duckdb.connect(db_path)
     con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
@@ -64,39 +81,63 @@ def load_to_duckdb(df, table_name, schema=SCHEMA, db_path=DB_PATH):
     con.close()
     print(f"✅ Loaded {len(df)} records into {schema}.{table_name}.")
 
-# Main Function to Ingest Data from Specified Endpoints
-def ingest_pokeapi(endpoints):
+# Recursive Processing of Resources
+def process_resource(resource, resource_type, processed, all_data):
+    if "url" not in resource:
+        return
+    resource_url = resource["url"]
+    if resource_url in processed:
+        return
+    processed.add(resource_url)
+
+    detailed_data = fetch_resource_detail(resource_url)
+    if not detailed_data:
+        return
+
+    flat_data = flatten_json(detailed_data)
+    all_data[resource_type].append(flat_data)
+
+    # Recursively process nested URLs
+    for key, value in detailed_data.items():
+        if isinstance(value, dict) and "url" in value:
+            process_resource(value, key, processed, all_data)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict) and "url" in item:
+                    process_resource(item, key, processed, all_data)
+
+# Main Function to Ingest Data
+def ingest_pokeapi(limit=50):
     print("🚀 Fetching Data from PokéAPI...")
+    all_data = {endpoint.replace('-', '_'): [] for endpoint in endpoints}
+    processed_urls = set()
 
     for endpoint in endpoints:
-        print(f"Fetching data for endpoint: {endpoint}...")
-        resources = fetch_all_resources(endpoint)
+        print(f"Fetching {endpoint}...")
+        resources = fetch_all_resources(endpoint, limit=50)
         if not resources:
-            print(f"⚠️ No resources found for {endpoint}, skipping.")
+            print(f"⚠️ No data for {endpoint}, skipping.")
             continue
 
-        # Fetch detailed data for each resource (Parallel Processing)
-        print(f"Fetching detailed data for {len(resources)} {endpoint} entries...")
-        detailed_data = []
+        # Fetch detailed data (Parallel Processing)
+        print(f"Fetching {len(resources)} entries for {endpoint}...")
         with ThreadPoolExecutor(max_workers=10) as executor:
             future_to_url = {executor.submit(fetch_resource_detail, res['url']): res['url'] for res in resources}
             for future in as_completed(future_to_url):
                 try:
                     result = future.result()
                     if result:
-                        detailed_data.append(result)
+                        process_resource(result, endpoint.replace('-', '_'), processed_urls, all_data)
                 except Exception as e:
-                    print(f"❌ Error processing URL {future_to_url[future]}: {e}")
+                    print(f"❌ Error processing {future_to_url[future]}: {e}")
 
-        # Flatten nested structures if necessary
-        if detailed_data:
-            df = pd.json_normalize(detailed_data)
-            table_name = f"{TABLE_PREFIX}{endpoint.replace('-', '_')}"
-            load_to_duckdb(df, table_name)
-        else:
-            print(f"⚠️ No detailed data retrieved for {endpoint}.")
+    # Store in DuckDB
+    for entity, data in all_data.items():
+        if data:
+            df = pd.DataFrame(data)
+            load_to_duckdb(df, f"{TABLE_PREFIX}{entity}")
 
-    print("✅ Data ingestion from PokéAPI completed.")
+    print("✅ PokéAPI ingestion complete.")
 
 # List of endpoints to ingest
 endpoints = [
@@ -112,4 +153,5 @@ endpoints = [
 ]
 
 # Run the ingestion process
-ingest_pokeapi(endpoints)
+if __name__ == "__main__":
+    ingest_pokeapi(limit=50)  # Fetch first 50 Pokémon for demo

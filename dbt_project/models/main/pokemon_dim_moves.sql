@@ -8,7 +8,7 @@ WITH source AS (
         accuracy,
         pp,
         priority,
-        damage_class.name as damage_class,
+        "damage_class.name" as damage_class,
         type.name as type
     FROM {{ source('raw', 'pokemon_move') }}
 )
